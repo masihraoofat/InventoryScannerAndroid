@@ -1,7 +1,5 @@
 package com.example.inventoryscannerandroid.utils;
 
-import android.util.Log;
-
 import org.simpleframework.xml.convert.Converter;
 import org.simpleframework.xml.stream.InputNode;
 import org.simpleframework.xml.stream.OutputNode;
@@ -17,7 +15,6 @@ import com.example.inventoryscannerandroid.models.FeatureInt;
 import com.example.inventoryscannerandroid.models.FeatureString;
 
 public class FeatureListConverter implements Converter<List<Feature>> {
-    private static final String TAG = "FeatureListConverter";
 
     @Override
     public List<Feature> read(InputNode node) throws Exception {
@@ -28,7 +25,6 @@ public class FeatureListConverter implements Converter<List<Feature>> {
             Feature feature = readFeature(child);
             if (feature != null) {
                 features.add(feature);
-                Log.d(TAG, "Added feature: " + child.getName() + " -> " + feature.getClass().getSimpleName() + " name: " + feature.name);
             }
             child = node.getNext();
         }

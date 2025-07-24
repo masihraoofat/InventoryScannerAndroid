@@ -89,18 +89,10 @@ public class XmlHttpClient {
                 try {
                     if (response.isSuccessful()) {
                         String xmlResponse = response.body().string();
-                        Log.d(TAG, "Received XML: " + xmlResponse);
                         
                         // Parse XML exactly like the original C# XmlSerializer
                         java.io.StringReader stringReader = new java.io.StringReader(xmlResponse);
                         Option option = serializer.read(Option.class, stringReader);
-                        
-                        Log.d(TAG, "Parsed " + option.zones.size() + " zones and " + option.features.size() + " features");
-                        
-                        // Debug log each feature type
-                        for (Feature feature : option.features) {
-                            Log.d(TAG, "Feature: " + feature.getClass().getSimpleName() + " - " + feature.name);
-                        }
                         
                         callback.onSuccess(option);
                     } else {
