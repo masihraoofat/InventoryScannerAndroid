@@ -17,6 +17,11 @@ public class FeatureInt extends Feature {
     }
 
     @Override
+    public String getType() {
+        return "FeatureInt";
+    }
+
+    @Override
     public String toString() {
         return name;
     }

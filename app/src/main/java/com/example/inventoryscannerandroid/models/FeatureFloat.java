@@ -19,6 +19,11 @@ public class FeatureFloat extends Feature {
     }
 
     @Override
+    public String getType() {
+        return "FeatureFloat";
+    }
+
+    @Override
     public String toString() {
         return name;
     }

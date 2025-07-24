@@ -3,6 +3,7 @@ package com.example.inventoryscannerandroid.utils;
 import android.util.Log;
 
 import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.transform.RegistryMatcher;
 
@@ -44,13 +45,16 @@ public class XmlHttpClient {
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .build();
         
-        // Setup XML serializer with transformations for BigDecimal
+        // Setup XML serializer with transformations for BigDecimal and Feature polymorphism
         RegistryMatcher matcher = new RegistryMatcher();
         matcher.bind(BigDecimal.class, new BigDecimalTransform());
         
-        this.serializer = new Persister(matcher);
+        // Create strategy that supports custom converters
+        AnnotationStrategy strategy = new AnnotationStrategy();
+        
+        this.serializer = new Persister(strategy, matcher);
     }
-    
+
     public interface OptionsCallback {
         void onSuccess(Option option);
         void onError(String error);

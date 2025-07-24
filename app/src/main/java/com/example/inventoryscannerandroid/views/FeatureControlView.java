@@ -3,6 +3,7 @@ package com.example.inventoryscannerandroid.views;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -52,7 +53,7 @@ public class FeatureControlView {
     }
 
     private void createFeatureControl(Feature feature, ScanEntry entry) {
-        String featureType = feature.getClass().getSimpleName();
+        String featureType = feature.getType();
         
         switch (featureType) {
             case "FeatureBool":

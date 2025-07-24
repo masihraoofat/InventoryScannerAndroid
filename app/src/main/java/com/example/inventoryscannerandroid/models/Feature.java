@@ -17,6 +17,10 @@ public class Feature implements Serializable {
         this.name = name;
     }
 
+    public String getType() {
+        return "Feature";
+    }
+
     @Override
     public String toString() {
         return name;

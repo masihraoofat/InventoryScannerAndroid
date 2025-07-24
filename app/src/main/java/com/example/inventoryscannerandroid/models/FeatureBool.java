@@ -17,6 +17,11 @@ public class FeatureBool extends Feature {
     }
 
     @Override
+    public String getType() {
+        return "FeatureBool";
+    }
+
+    @Override
     public String toString() {
         return name;
     }

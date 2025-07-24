@@ -433,6 +433,9 @@ public class MainActivity extends AppCompatActivity {
                     zoneAdapter.clear();
                     zoneAdapter.addAll(option.zones);
                     
+                    // Update UI including feature controls
+                    updateUI();
+
                     // Post scan entries using XML client (matches original exactly)
                     xmlHttpClient.postScanEntries(setting.apiKey, scanEntries, new XmlHttpClient.SyncCallback() {
                         @Override
