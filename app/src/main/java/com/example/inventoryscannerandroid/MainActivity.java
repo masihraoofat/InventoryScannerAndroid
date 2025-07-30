@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 selectedEntry.code = sanitizedVin;
                 vinAdapter.notifyDataSetChanged();
+                selectedEntry = null; 
             }
 
             editManualVin.setText("");
