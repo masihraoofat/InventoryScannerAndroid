@@ -32,6 +32,15 @@ public class ScanEntry implements Serializable {
 
     @Override
     public String toString() {
+        List<Feature> enabledFeatures = new ArrayList<>();
+        for (Feature feature : this.features) {
+            if (feature instanceof FeatureBool && ((FeatureBool) feature).value) {
+                enabledFeatures.add(feature);
+            }
+        }
+        if (!enabledFeatures.isEmpty()) {
+            return code + " - " + enabledFeatures.toString();
+        }
         return code;
     }
 } 
