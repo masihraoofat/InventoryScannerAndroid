@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnDelete;
     private Button btnClear;
     private Button btnSync;
+    private View loadingView; // Add loading view
     
     // Data and Utilities
     private Persistence persistence;
@@ -77,7 +78,14 @@ public class MainActivity extends AppCompatActivity {
         initializeData();
         setupEventListeners();
         loadFromStorage();
-        updateUI();
+        
+        // Check if we need to load data from API on startup
+        if (setting.apiKey != null && !setting.apiKey.isEmpty()) {
+            loadDataFromApi();
+        } else {
+            // Show API key dialog on first startup
+            showApiKeyDialogOnStartup();
+        }
     }
 
     private void initializeComponents() {
@@ -92,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         btnDelete = findViewById(R.id.btnDelete);
         btnClear = findViewById(R.id.btnClear);
         btnSync = findViewById(R.id.btnSync);
+        loadingView = findViewById(R.id.loadingView); // Add this to your layout
         
         // Initialize utilities
         persistence = new Persistence(this);
@@ -232,10 +241,6 @@ public class MainActivity extends AppCompatActivity {
         scanEntries = persistence.loadScanEntries();
         option = persistence.loadOption();
         setting = persistence.loadSetting();
-
-        // Load sample data if empty (for testing purposes)
-        SampleDataLoader.loadSampleDataIfEmpty(persistence);
-        option = persistence.loadOption(); // Reload after potential sample data load
 
         // Populate zone spinner
         zoneAdapter.clear();
@@ -397,6 +402,26 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void showApiKeyDialogOnStartup() {
+        EditText editText = new EditText(this);
+        editText.setHint("Enter API Key");
+
+        new AlertDialog.Builder(this)
+                .setTitle("API Key Required")
+                .setMessage("Please enter your API key to load zones and features.")
+                .setView(editText)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String apiKey = editText.getText().toString().trim();
+                    if (!apiKey.isEmpty()) {
+                        setting.apiKey = apiKey;
+                        persistence.saveSetting(setting);
+                        loadDataFromApi();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
     private void showApiKeyDialog() {
         EditText editText = new EditText(this);
         editText.setHint("Enter API Key");
@@ -422,7 +447,34 @@ public class MainActivity extends AppCompatActivity {
     private void performSync() {
         saveToStorage();
         
-        // First get options using XML client (matches original exactly)
+        // Only post scan entries, don't fetch options again
+        xmlHttpClient.postScanEntries(setting.apiKey, scanEntries, new XmlHttpClient.SyncCallback() {
+            @Override
+            public void onSuccess(String response) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "Sync successful", Toast.LENGTH_LONG).show();
+                    
+                    // Clear entries after successful sync
+                    showConfirmDialog("Sync successful! Clear all entries?", () -> {
+                        scanEntries.clear();
+                        vinAdapter.clear();
+                        editManualVin.setText("");
+                        selectedEntry = null;
+                        updateUI();
+                    });
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> showError("Sync failed: " + error));
+            }
+        });
+    }
+
+    private void loadDataFromApi() {
+        showLoading(true);
+        
         xmlHttpClient.getOptions(setting.apiKey, new XmlHttpClient.OptionsCallback() {
             @Override
             public void onSuccess(Option newOption) {
@@ -434,40 +486,40 @@ public class MainActivity extends AppCompatActivity {
                     zoneAdapter.clear();
                     zoneAdapter.addAll(option.zones);
                     
-                    // Update UI including feature controls
+                    if (!option.zones.isEmpty() && currentZone == null) {
+                        currentZone = option.zones.get(0);
+                        spinnerZone.setSelection(0);
+                    }
+                    
+                    showLoading(false);
                     updateUI();
-
-                    // Post scan entries using XML client (matches original exactly)
-                    xmlHttpClient.postScanEntries(setting.apiKey, scanEntries, new XmlHttpClient.SyncCallback() {
-                        @Override
-                        public void onSuccess(String response) {
-                            runOnUiThread(() -> {
-                                Toast.makeText(MainActivity.this, "Sync successful", Toast.LENGTH_LONG).show();
-                                
-                                // Clear entries after successful sync
-                                showConfirmDialog("Sync successful! Clear all entries?", () -> {
-                                    scanEntries.clear();
-                                    vinAdapter.clear();
-                                    editManualVin.setText("");
-                                    selectedEntry = null;
-                                    updateUI();
-                                });
-                            });
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            runOnUiThread(() -> showError("Sync failed: " + error));
-                        }
-                    });
                 });
             }
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> showError("Failed to get options using API Key: " + error));
+                runOnUiThread(() -> {
+                    showLoading(false);
+                    showError("Failed to load data: " + error);
+                    updateUI(); // Still update UI with empty data
+                });
             }
         });
+    }
+
+    private void showLoading(boolean show) {
+        if (loadingView != null) {
+            loadingView.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+        
+        // Disable UI components during loading
+        spinnerZone.setEnabled(!show);
+        editManualVin.setEnabled(!show);
+        btnManualAdd.setEnabled(!show && VinValidator.isValidVin(editManualVin.getText().toString().trim()));
+        btnScan.setEnabled(!show);
+        btnDelete.setEnabled(!show && selectedEntry != null);
+        btnClear.setEnabled(!show && !scanEntries.isEmpty());
+        btnSync.setEnabled(!show && !scanEntries.isEmpty());
     }
 
     @Override
