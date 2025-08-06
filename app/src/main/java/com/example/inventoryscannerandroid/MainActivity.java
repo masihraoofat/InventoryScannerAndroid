@@ -176,12 +176,13 @@ public class MainActivity extends AppCompatActivity {
         btnManualAdd.setOnClickListener(v -> {
             String vin = editManualVin.getText().toString().trim().toUpperCase();
             
-            if (!VinValidator.isValidVin(vin)) {
+            // Check VIN validation only if enabled for manual entry
+            if (setting.manualVinValidationEnabled && !VinValidator.isValidVin(vin)) {
                 showError("Invalid VIN number");
                 return;
             }
 
-            String sanitizedVin = VinValidator.sanitizeVin(vin);
+            String sanitizedVin = setting.manualVinValidationEnabled ? VinValidator.sanitizeVin(vin) : vin;
             
             if (selectedEntry == null) {
                 addScanEntry(sanitizedVin);
@@ -291,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateButtonStates() {
         String vinText = editManualVin.getText().toString().trim();
-        boolean validVin = VinValidator.isValidVin(vinText);
+        boolean validVin = setting.manualVinValidationEnabled ? VinValidator.isValidVin(vinText) : !vinText.isEmpty();
         
         btnManualAdd.setEnabled(validVin);
         btnManualAdd.setText(selectedEntry != null ? "Update" : "Add");
@@ -361,9 +362,11 @@ public class MainActivity extends AppCompatActivity {
             if (result.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-                String scannedCode = VinValidator.sanitizeVin(result.getContents());
+                String scannedCode = setting.scanVinValidationEnabled ? 
+                    VinValidator.sanitizeVin(result.getContents()) : 
+                    result.getContents().trim().toUpperCase();
                 
-                if (!VinValidator.isValidVin(scannedCode)) {
+                if (setting.scanVinValidationEnabled && !VinValidator.isValidVin(scannedCode)) {
                     selectedEntry = null;
                     editManualVin.setText(result.getContents());
                     showError("Invalid VIN number: " + result.getContents());
@@ -560,7 +563,9 @@ public class MainActivity extends AppCompatActivity {
         // Disable UI components during loading
         spinnerZone.setEnabled(!show);
         editManualVin.setEnabled(!show);
-        btnManualAdd.setEnabled(!show && VinValidator.isValidVin(editManualVin.getText().toString().trim()));
+        btnManualAdd.setEnabled(!show && (setting.manualVinValidationEnabled ? 
+            VinValidator.isValidVin(editManualVin.getText().toString().trim()) : 
+            !editManualVin.getText().toString().trim().isEmpty()));
         btnScan.setEnabled(!show);
         btnDelete.setEnabled(!show && selectedEntry != null);
         btnClear.setEnabled(!show && !scanEntries.isEmpty());
@@ -587,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         
-        // Check if API key is still valid after returning from settings
+        // Check if settings have changed after returning from settings
         Setting newSetting = persistence.loadSetting();
         
         // Check if API key was reset (empty)
@@ -600,6 +605,14 @@ public class MainActivity extends AppCompatActivity {
             // API key has changed, reload options
             setting = newSetting;
             loadDataFromApi();
+        }
+        // Check if VIN validation settings have changed
+        else if (setting.manualVinValidationEnabled != newSetting.manualVinValidationEnabled ||
+                 setting.scanVinValidationEnabled != newSetting.scanVinValidationEnabled) {
+            // VIN validation settings have changed, update the setting and refresh UI
+            setting = newSetting;
+            updateButtonStates();
+            updateFeatureControls();
         }
     }
 

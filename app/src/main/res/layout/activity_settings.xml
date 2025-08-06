@@ -18,10 +18,87 @@
         android:id="@+id/btnRemoveApiKey"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         android:text="Remove API Key"
         android:textColor="@android:color/white"
         android:padding="16dp" />
+
+    <!-- VIN Validation Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="VIN Validation"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- Manual VIN Validation -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Manual Entry Validation:"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupManualValidation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioManualEnabled"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Enabled"
+            android:padding="8dp" />
+
+        <RadioButton
+            android:id="@+id/radioManualDisabled"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Disabled"
+            android:padding="8dp" />
+
+    </RadioGroup>
+
+    <!-- Scan VIN Validation -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Scan Validation:"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupScanValidation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioScanEnabled"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Enabled"
+            android:padding="8dp" />
+
+        <RadioButton
+            android:id="@+id/radioScanDisabled"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Disabled"
+            android:padding="8dp" />
+
+    </RadioGroup>
 
     <!-- Info Section -->
     <TextView
@@ -36,7 +113,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="This app allows you to scan VIN barcodes and manage inventory data. The API key is required to sync data with the server."
+        android:text="This app allows you to scan VIN barcodes and manage inventory data. The API key is required to load zones and sync data with the server. You can enable or disable VIN validation for manual entry and scanning."
         android:textSize="14sp" />
 
 </LinearLayout> 
