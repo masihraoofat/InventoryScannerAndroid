@@ -33,72 +33,52 @@
         android:textStyle="bold" />
 
     <!-- Manual VIN Validation -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="Manual Entry Validation:"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <RadioGroup
-        android:id="@+id/radioGroupManualValidation"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <RadioButton
-            android:id="@+id/radioManualEnabled"
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Enabled"
-            android:padding="8dp" />
+            android:text="Manual Entry Validation"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <RadioButton
-            android:id="@+id/radioManualDisabled"
-            android:layout_width="0dp"
+        <Switch
+            android:id="@+id/switchManualValidation"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Disabled"
-            android:padding="8dp" />
+            android:layout_marginStart="16dp" />
 
-    </RadioGroup>
+    </LinearLayout>
 
     <!-- Scan VIN Validation -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="Scan Validation:"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <RadioGroup
-        android:id="@+id/radioGroupScanValidation"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <RadioButton
-            android:id="@+id/radioScanEnabled"
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Enabled"
-            android:padding="8dp" />
+            android:text="Scan Validation"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <RadioButton
-            android:id="@+id/radioScanDisabled"
-            android:layout_width="0dp"
+        <Switch
+            android:id="@+id/switchScanValidation"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Disabled"
-            android:padding="8dp" />
+            android:layout_marginStart="16dp" />
 
-    </RadioGroup>
+    </LinearLayout>
 
     <!-- Info Section -->
     <TextView
