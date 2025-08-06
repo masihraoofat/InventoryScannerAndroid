@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="32dp">
+    android:paddingTop="40dp">
 
     <!-- Main Content -->
     <LinearLayout
@@ -93,7 +93,7 @@
             android:orientation="horizontal"
             android:gravity="center">
         </LinearLayout>
-        
+
         <!-- VIN List -->
         <TextView
             android:layout_width="match_parent"
@@ -109,7 +109,6 @@
             android:layout_height="0dp"
             android:layout_marginBottom="16dp"
             android:layout_weight="1"
-            android:background="@android:color/background_light"
             android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp" />
 
@@ -117,7 +116,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="30dp"
+            >
 
             <Button
                 android:id="@+id/btnDelete"
@@ -125,27 +126,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:background="@android:color/holo_red_dark"
                 android:text="Delete"
-                android:textColor="@android:color/white" />
-
-            <Button
-                android:id="@+id/btnClear"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:background="@android:color/holo_orange_dark"
-                android:text="Clear All"
                 android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btnSync"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:background="@android:color/holo_green_dark"
                 android:text="Sync"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnClear"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Clear All"
                 android:textColor="@android:color/white" />
 
         </LinearLayout>
