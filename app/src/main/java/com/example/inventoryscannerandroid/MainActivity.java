@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.content.Intent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -235,6 +238,8 @@ public class MainActivity extends AppCompatActivity {
                 performSync();
             }
         });
+
+
     }
 
     private void loadFromStorage() {
@@ -407,24 +412,60 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+
+
     private void showApiKeyDialogOnStartup() {
+        showApiKeyDialogOnStartup(null);
+    }
+
+    private void showApiKeyDialogOnStartup(String errorMessage) {
+        // Create a vertical layout for the dialog content
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 20, 50, 20);
+
+        // Add the message text
+        TextView messageText = new TextView(this);
+        messageText.setText("Please enter your API key to load zones and features.");
+        messageText.setTextSize(16);
+        layout.addView(messageText);
+
+        // Add the EditText
         EditText editText = new EditText(this);
         editText.setHint("Enter API Key");
+        editText.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.addView(editText);
 
-        new AlertDialog.Builder(this)
+        // Add error message if provided
+        if (errorMessage != null && !errorMessage.isEmpty()) {
+            TextView errorText = new TextView(this);
+            errorText.setText(errorMessage);
+            errorText.setTextColor(0xFFFF0000); // Red color
+            errorText.setTextSize(14);
+            errorText.setPadding(0, 20, 0, 0);
+            layout.addView(errorText);
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("API Key Required")
-                .setMessage("Please enter your API key to load zones and features.")
-                .setView(editText)
-                .setPositiveButton("Save", (dialog, which) -> {
+                .setView(layout)
+                .setPositiveButton("Save", (dialogInterface, which) -> {
                     String apiKey = editText.getText().toString().trim();
                     if (!apiKey.isEmpty()) {
                         setting.apiKey = apiKey;
                         persistence.saveSetting(setting);
                         loadDataFromApi();
+                    } else {
+                        // If empty, show the dialog again
+                        showApiKeyDialogOnStartup();
                     }
                 })
-                .setNegativeButton("Cancel", null)
-                .show();
+                .setCancelable(false) // Prevent canceling
+                .create();
+        
+        dialog.show();
     }
 
     private void showApiKeyDialog() {
@@ -505,8 +546,7 @@ public class MainActivity extends AppCompatActivity {
             public void onError(String error) {
                 runOnUiThread(() -> {
                     showLoading(false);
-                    showError("Failed to load data: " + error);
-                    updateUI(); // Still update UI with empty data
+                    showApiKeyDialogOnStartup("Failed to load data: " + error);
                 });
             }
         });
@@ -525,6 +565,42 @@ public class MainActivity extends AppCompatActivity {
         btnDelete.setEnabled(!show && selectedEntry != null);
         btnClear.setEnabled(!show && !scanEntries.isEmpty());
         btnSync.setEnabled(!show && !scanEntries.isEmpty());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        
+        // Check if API key is still valid after returning from settings
+        Setting newSetting = persistence.loadSetting();
+        
+        // Check if API key was reset (empty)
+        if (newSetting.apiKey == null || newSetting.apiKey.trim().isEmpty()) {
+            // API key was reset, force user to enter one
+            showApiKeyDialogOnStartup();
+        } 
+        // Check if API key has changed (different from current setting)
+        else if (setting.apiKey == null || !setting.apiKey.equals(newSetting.apiKey)) {
+            // API key has changed, reload options
+            setting = newSetting;
+            loadDataFromApi();
+        }
     }
 
     @Override

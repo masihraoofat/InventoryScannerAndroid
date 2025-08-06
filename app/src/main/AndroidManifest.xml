@@ -37,6 +37,12 @@
             </intent-filter>
         </activity>
 
+        <!-- Settings Activity -->
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <!-- Barcode Scanner Activity -->
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
