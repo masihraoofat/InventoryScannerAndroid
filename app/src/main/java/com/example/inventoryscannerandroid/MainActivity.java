@@ -367,6 +367,11 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 addScanEntry(scannedCode);
+                // Clear selectedEntry after successful scan to ensure manual entry starts in Add mode
+                selectedEntry = null;
+                editManualVin.setText("");
+                updateButtonStates();
+                updateFeatureControls();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
